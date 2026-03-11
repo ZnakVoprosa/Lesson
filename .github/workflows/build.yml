@@ -13,8 +13,9 @@ jobs:
         with:
           channel: 'stable'
       - run: flutter pub get
-      - run: flutter build apk --release
+      # Добавляем --verbose, чтобы видеть детали ошибки, если она повторится
+      - run: flutter build apk --release --verbose
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release-release.apk
