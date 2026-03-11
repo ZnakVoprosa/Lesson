@@ -1,4 +1,4 @@
-name: Build APK
+name: Flutter Build
 
 on:
   push:
@@ -13,9 +13,8 @@ jobs:
         with:
           channel: 'stable'
       - run: flutter pub get
-      # Добавляем --verbose, чтобы видеть детали ошибки, если она повторится
-      - run: flutter build apk --release --verbose
+      - run: flutter build apk
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
