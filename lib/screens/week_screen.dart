@@ -5,24 +5,17 @@ import '../providers/schedule_provider.dart';
 class WeekScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ScheduleProvider>(context);
-    return Column(
-      children: [
-        SwitchListTile(
-          title: Text("Неделя: ${provider.currentViewWeek == 1 ? 'Верхняя' : 'Нижняя'}"),
-          value: provider.currentViewWeek == 2,
-          onChanged: (_) => provider.toggleWeek(),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 7,
-            itemBuilder: (ctx, i) => ListTile(
-              title: Text("День ${i + 1}"),
-              subtitle: Text("${provider.getLessonsForDay(i + 1).length} пар(ы)"),
-            ),
-          ),
-        ),
-      ],
+    final prov = context.watch<ScheduleProvider>();
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (ctx, dayIndex) {
+        final day = dayIndex + 1;
+        final dayLessons = prov.lessons.where((l) => l.dayOfWeek == day && (l.weekType == 0 || l.weekType == prov.currentWeek));
+        return ExpansionTile(
+          title: Text('День $day'),
+          children: dayLessons.map((e) => ListTile(title: Text(e.title))).toList(),
+        );
+      },
     );
   }
 }
