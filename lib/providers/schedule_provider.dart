@@ -1,32 +1,28 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:convert';
 import '../models/lesson.dart';
+import '../models/bell_schedule.dart';
 
 class ScheduleProvider with ChangeNotifier {
   List<Lesson> _lessons = [];
-  int _currentViewWeek = 1;
   List<Lesson> get lessons => _lessons;
-  int get currentViewWeek => _currentViewWeek;
 
-  void toggleWeek() { _currentViewWeek = _currentViewWeek == 1 ? 2 : 1; notifyListeners(); }
+  int _currentWeek = 1;
+  int get currentWeek => _currentWeek;
+  void toggleWeek() { _currentWeek = _currentWeek == 1 ? 2 : 1; }
 
-  Future<void> saveToFile(String fileName) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/$fileName.lesson');
-    await file.writeAsString(jsonEncode(_lessons.map((e) => e.toJson()).toList()));
-  }
-
-  Future<void> loadFromFile(String fileName) async {
+  Future<void> load() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/$fileName.lesson');
-      final data = jsonDecode(await file.readAsString());
-      _lessons = (data as List).map((e) => Lesson.fromJson(e)).toList();
-      notifyListeners();
+      final f = File('${dir.path}/data.lesson');
+      if (f.existsSync()) {
+        final json = jsonDecode(await f.readAsString());
+        _lessons = (json['lessons'] as List).map((e) => Lesson.fromJson(e)).toList();
+        notifyListeners();
+      }
     } catch (_) {}
   }
-
-  void addLesson(Lesson l) { _lessons.add(l); notifyListeners(); }
 }
